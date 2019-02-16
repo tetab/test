@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-deploy
+  labels:
+    app: test
+  namespace: jenkins
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test
+  template:
+    metadata:
+      labels:
+        app: test
+        component: test
+    spec:
+      containers:
+      - name: test
+        image: ${REG_URL}/test/test:$GIT_COMMIT
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+      imagePullSecrets:
+      - name: gitlab-registry
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-service
+  namespace: jenkins
+  labels:
+    app: test
+spec:
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: test
+    component: test
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: test-service-ingress
+  namespace: jenkins
+  annotations:
+    kubernetes.io/ingress.class: traefik
+  labels:
+    app: test
+spec:
+  rules:
+  - host: test.app.demo.units.cloud
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: test-service
+          servicePort: 80
