@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: test
-        image: ${REG_URL}/test/test:$GIT_COMMIT
+        image: ${REG_URL}/tetab/test:$GIT_COMMIT
         imagePullPolicy: Always
         ports:
         - containerPort: 80
@@ -51,7 +51,7 @@ metadata:
     app: test
 spec:
   rules:
-  - host: test.app.demo.units.cloud
+  - host: test.gh.app.demo.units.cloud
     http:
       paths:
       - path: /
